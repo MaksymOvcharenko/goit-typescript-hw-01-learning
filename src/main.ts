@@ -209,14 +209,14 @@ import './style.css'
 //   age: number;
 //   lastName?: string;  // не обов'язковий ключ.. може бути, може ні. Частіше використовується в типізації пропсів реакт
 // }
-interface User {
-  name: string;
-  age: number;
-  lastName?: string;
-  sayHello(): string;
-  sayBye(): void;
-  showAge(age: number): string;
-}
+// interface User {
+//   name: string;
+//   age: number;
+//   lastName?: string;
+//   sayHello(): string;
+//   sayBye(): void;
+//   showAge(age: number): string;
+// }
 
 // const user = {
 //   name: "Bob",
