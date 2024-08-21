@@ -250,3 +250,63 @@ import './style.css'
 //     return `My age ${age}`
 //   }
 // }
+
+
+//GENERICS and INDEX TYPES LESSONS 2///
+
+// let name = "Type"; //Неявна типізація
+// let username:string = "Type" //Явна типізація
+
+
+//Index TYPES
+
+// const fruits = {
+//   apples: 10,
+//   banana: 15,
+//   orange: 25,
+// }
+
+// const electronics:items = {
+//   telephone: 24,
+//   laptop: "suit", // ОСь показує що помилка! БО тип лаптопу  не той що в типі айтемс...
+//   tablets: 13,
+//   computers: null, // Тоді треба юзати уніон тип.
+// }
+
+// type items = {
+//   [key: string]: number | null ,
+
+// }
+
+
+//GENERICS
+
+//приклад з помилкою...
+// function getFirstElement(arr:number[]) {
+//   return arr[0];
+// }
+
+// const numArr = [10, 20, 30];
+// const stringArr = ["one", "two", "three"];
+// const objArr = [{ one: "one" }, { two: "two" }];
+
+// console.log(getFirstElement(numArr)); 
+// console.log(getFirstElement(stringArr)); // ось помилка бо функція чекає рядок
+// console.log(getFirstElement(objArr)); // типізувати можна тільки дженеріком
+
+// приклад як зробити генерік
+function getFirstElement<T>(arr:T[]): T | undefined { // БУКВА Т може бути й інша це просто так домовлено, це динамічний тип... 
+  return arr[0]; // zкщо масив буде пустий, то поверниться ж андефайнд, і треба обробити тип ретьорну вище
+}
+type obj = {
+  [key: string]: string;
+}[]; // Затипізували масив обьектів.
+
+const numArr = [10, 20, 30];
+const stringArr = ["one", "two", "three"];
+const objArr: obj = [{ one: "one" }, { two: 24 }];// помилка бо тип чекає стрінг
+
+console.log(getFirstElement(numArr)); 
+console.log(getFirstElement(stringArr)); // тепер помилки немає
+console.log(getFirstElement(objArr)); // і тут теж
+console.log(getFirstElement(2)); // але тут помилка, бо типізація генеріка чекає масив
