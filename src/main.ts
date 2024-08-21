@@ -295,18 +295,200 @@ import './style.css'
 // console.log(getFirstElement(objArr)); // типізувати можна тільки дженеріком
 
 // приклад як зробити генерік
-function getFirstElement<T>(arr:T[]): T | undefined { // БУКВА Т може бути й інша це просто так домовлено, це динамічний тип... 
-  return arr[0]; // zкщо масив буде пустий, то поверниться ж андефайнд, і треба обробити тип ретьорну вище
-}
-type obj = {
-  [key: string]: string;
-}[]; // Затипізували масив обьектів.
+// function getFirstElement<T>(arr:T[]): T | undefined { // БУКВА Т може бути й інша це просто так домовлено, це динамічний тип... 
+//   return arr[0]; // zкщо масив буде пустий, то поверниться ж андефайнд, і треба обробити тип ретьорну вище
+// }
+// type obj = {
+//   [key: string]: string;
+// }[]; // Затипізували масив обьектів.
 
-const numArr = [10, 20, 30];
-const stringArr = ["one", "two", "three"];
-const objArr: obj = [{ one: "one" }, { two: 24 }];// помилка бо тип чекає стрінг
+// const numArr = [10, 20, 30];
+// const stringArr = ["one", "two", "three"];
+// const objArr: obj = [{ one: "one" }, { two: 24 }];// помилка бо тип чекає стрінг
 
-console.log(getFirstElement(numArr)); 
-console.log(getFirstElement(stringArr)); // тепер помилки немає
-console.log(getFirstElement(objArr)); // і тут теж
-console.log(getFirstElement(2)); // але тут помилка, бо типізація генеріка чекає масив
+// console.log(getFirstElement(numArr)); 
+// console.log(getFirstElement(stringArr)); // тепер помилки немає
+// console.log(getFirstElement(objArr)); // і тут теж
+// console.log(getFirstElement(2)); // але тут помилка, бо типізація генеріка чекає масив
+
+// next 
+
+// const person = {
+//   name: "John",
+//   age: 24,
+//   occupation: "Engineer",
+// }
+
+// person[key] // достукатись до ключа. Для циклів підходить.
+
+// function getProperty(obj, key) { //тут бьеє помилку жиче рішення буде
+//   return obj[key]
+// }
+
+// const name = getProperty(person, "name");
+// const age = getProperty(person, "age")
+
+// function getProperty<T, K extends keyof T>(obj: T, key:K ) :T[K] {  // Т - це тип динамічний обьекту, К -тип ключів динамічний. Але щоб працювало треба зв'язати Ключі з обьектом через ///  extends keyof T ///
+//   return obj[key] 
+// }
+
+// const name = getProperty(person, "name");
+// const age = getProperty(person, "age");
+// const gender = getProperty(person, "gender") // показує що валідація ключа не проходить, цього ключа немає в обьекті персон.!!!
+
+//ДАЛІ ІНТСРУМЕНТИ ДЖЕНЕРЕКІВ
+
+//1.  PARTIALS коли в об'єкті змінюєш данні об'єктом
+
+
+// interface UserProfile {
+//   username: string;
+//   email: string;
+//   age: number;
+//   authorization: boolean;
+// }
+
+// const originalProfile :UserProfile = {
+//   username: "John",
+//   email: "John2024@gmail.com",
+//   age: 28,
+//   authorization: true,
+// }
+
+///PROBLEMA
+
+// function updateUserProfile(profile, updates) { // Тут відсутня типізація, бьє помилки. Рішення нижче.
+//    return {...profile, ...updates}
+// }
+
+// РІшення
+//  function updateUserProfile(profile:UserProfile, updates:Partial<UserProfile>) { //Перший обьект затипізували через інтерфейся, а данні які приходять для зміни типізуємо через конструкцію ПАРТІАЛС з ТИПОМ ІНТЕРФЕЙСА
+//    return {...profile, ...updates}
+// }
+
+// const updateProfile = updateUserProfile(originalProfile, { age: 27, username: "Stepan" });
+
+// 2. READ ONLY -  захищає данні від небажаних змін, тільки можна прочитати.
+
+// interface UserProfile {
+//   id: number;
+//   name: string;
+//   age: number;
+// }
+// ОСЬ БАЗОВА КОНСТРУКЦІЯ Readonle <ДИНАМІЧНИЙ ТИП>
+
+// const user: Readonly <UserProfile>= { // такий запис захищає данні від перезапису, тільки.. читання. 
+//   id: 120,
+//   name: "Joe",
+//   age: 18,
+// }
+
+// user.id = 205; // Ось приклад. Тут Б'є помилку, що не можемо перезаписати.
+
+// 3.   PICK  
+// Синтаксис
+//  Pick < T, K, S> - де Пік( назва інструмента), де літери Динамічні данні.
+
+// interface UserInfo {
+//   id: number;
+//   name: string;
+//   email: string;
+//   department: string;
+//   hireDate: Date // дата вшита в тайпскрипт, синтаксис Дейт
+// }
+
+// const fullEmploymentInfo: UserInfo = {
+//   id: 97,
+//   name: "Jony",
+//   email: "Jony123@gmail.com",
+//   department: "QA",
+//   hireDate: new Date( "2020-01-10"),
+// }
+
+// - 1. Перший самий простий і не самий вірний варіант типізації ретьорну , просто вказати типи обьекту
+
+
+// function showUserInfo(profile: UserInfo): { name: string; email: string} { 
+//   return {
+//     name: profile.name,
+//     email: profile.email
+//   }
+// }
+
+// - 2. Варіант  через ПІК типізували ретьорн, взяли у Обьекта по ключам типізували
+// результат коли потрібно повернути тип, як в інтерфейсів але новий обьект з обмеженою кількістю данних.
+// function showUserInfo(profile: UserInfo): Pick<UserInfo, "name" | "email"  > {
+//   return {
+//     name: profile.name,
+//     email: profile.email
+//   }
+// }
+
+// showUserInfo(fullEmploymentInfo);
+
+//4. Omit - Різниця з ПІК він не витягую частинку обьекту, а видаляє частинку обьекту
+
+
+// interface UserInfo {
+//   id: number;
+//   name: string;
+//   email: string;
+//   department: string;
+//   hireDate: Date; // дата вшита в тайпскрипт, синтаксис Дейт
+// }
+
+// const fullEmploymentInfo: UserInfo = {
+//   id: 97,
+//   name: "Jony",
+//   email: "Jony123@gmail.com",
+//   department: "QA",
+//   hireDate: new Date( "2020-01-10"),
+// }
+//  - 1. варіант, створити новий інтерфейс і типизувати ним ретьорн.
+// interface newUserInfo{
+//   id: number;
+//   name: string;
+//   email: string;
+//   department: string;
+// }
+// function closeInfo(profile: UserInfo) :newUserInfo {
+//   return {
+//     id: profile.id,
+//   name: profile.name,
+//   email: profile.email,
+//   department: profile.department,
+//   }
+// }
+// -2 варіант Omit
+// ОМІТ передаємо ключ, або декілька які хочемо вирізати  старого обьекту, щоб не побачити в новому їх
+
+// function closeInfo(profile: UserInfo) :Omit<UserInfo, "hireDate">{
+//   return {
+//     id: profile.id,
+//   name: profile.name,
+//   email: profile.email,
+//   department: profile.department,
+//   }
+// }
+
+// closeInfo(fullEmploymentInfo);
+
+
+// 5.Record 
+// ним можна замінити ось це 
+
+// type items = {
+//   [key: string]: number | null ,
+
+// }
+
+// function recordTemperatures(temps: number[]): Record <string, number> {
+//   let temperatureRecord: Record<string,number> = {}
+//   temps.forEach((temp, index) => {
+//     temperatureRecord[`day${index + 1}`] = temp;
+//   });
+//   return temperatureRecord;
+// }
+
+// const weeklyTemps = [22, 24, 23, 25, 24, 26, 27]
+// const tempRecord = recordTemperatures(weeklyTemps)
